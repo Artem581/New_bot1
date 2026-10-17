@@ -34,18 +34,16 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
-
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
-        "Команды:\n/start - начать\n/help - помощь\n/menu - меню с кнопками"
+        "Команды:\n/start - начать\n/help - помощь\n/menu - меню с кнопками\n/photo - фото по ссылке\n/localphoto - локальное фото"
     )
-
 
 
 async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     button_time = InlineKeyboardButton("Дата и время", callback_data="time")
     button_fact = InlineKeyboardButton("Случайный факт", callback_data="fact")
-    button_site = InlineKeyboardButton("Открыть сайт", url="https://example.com")
+    button_site = InlineKeyboardButton("Открыть github", url="https://github.com/")
     
     keyboard = [
         [button_time, button_fact],
@@ -55,6 +53,20 @@ async def menu(update: Update, context: ContextTypes.DEFAULT_TYPE):
     
     await update.message.reply_text("Выберите действие:", reply_markup=reply_markup)
 
+
+async def send_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    url = "https://picsum.photos/600"
+    await update.message.reply_photo(url, caption="Вот фото по ссылке 📷")
+
+
+async def send_local_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    path = "images/photo.jpg"
+    if not os.path.exists(path):
+        await update.message.reply_text("Ошибка: файл в папке images/photo.jpg не найден!")
+        return
+        
+    with open(path, "rb") as f:
+        await update.message.reply_photo(f, caption="Локальное фото 📁")
 
 
 async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -76,6 +88,7 @@ async def handle_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await update.message.reply_text("Извини, я пока это не понимаю.")
 
 
+
 def main():
     if not TOKEN:
         raise ValueError("Токен не найден! Проверьте файл .env")
@@ -85,6 +98,9 @@ def main():
     app.add_handler(CommandHandler("start", start))
     app.add_handler(CommandHandler("help", help_command))
     app.add_handler(CommandHandler("menu", menu))
+    app.add_handler(CommandHandler("photo", send_photo))
+    app.add_handler(CommandHandler("localphoto", send_local_photo))
+
     app.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle_text))
 
     print("Бот запущен...")
