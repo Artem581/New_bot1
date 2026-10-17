@@ -8,7 +8,7 @@ from telegram ext.import (
 
 
 load_dontev()
-TOKEN = os.getenv('telegram-bot')
+TOKEN = os.getenv('TELEGRAM-BOT-TOKEN')
 
 app = ApplicationBuilder().token(TOKEN).build()
 
